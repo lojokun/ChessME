@@ -72,6 +72,8 @@ def main():
                 if e.button == 1:
                     initial_pos = (row, col)
                     piece_at_loc = gs.board[row][col]
+                    if piece_at_loc == "--":
+                        piece_at_loc = None
                     # print(f"initial pos = {initial_pos}")
             elif e.type == p.MOUSEBUTTONUP:
                 if e.button == 1:
