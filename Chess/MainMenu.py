@@ -1,8 +1,10 @@
 import pygame as p
-from Chess import ChessMain
+
+import ChessMain
 
 WIDTH = HEIGHT = 512
 LOGO = p.image.load("images/ChessME!.png")
+LOGO = p.transform.scale(LOGO, (500, 500))
 LOGO_X = 5
 LOGO_Y = 0
 
@@ -16,6 +18,11 @@ class Button:
         self.height = height
         self.text = text
 
+    def draw_text(self, screen, font):
+        text = font.render(self.text, True, (0, 0, 0))
+        screen.blit(text, (self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 -
+                                                                                       text.get_height() / 2)))
+
     def draw(self, screen, outline=None):
         if outline:
             p.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
@@ -23,9 +30,7 @@ class Button:
 
         if self.text != "":
             font = p.font.SysFont("comicsans", 60)
-            text = font.render(self.text, True, (0, 0, 0))
-            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 -
-                                                                                       text.get_height()/2)))
+            self.draw_text(screen, font)
 
     def is_over(self, pos):
         # Pos is the mouse position or a tuple of (x, y) coordinates
@@ -36,7 +41,11 @@ class Button:
         return False
 
 
-def draw_menu(screen, start_button, quit_button):
+start_button = Button((255, 255, 255), 130, 275, 250, 50, "Start Game")
+quit_button = Button((255, 255, 255), 130, 340, 250, 50, "Quit")
+
+
+def draw_menu(screen):
     screen.fill(p.Color("white"))
     screen.blit(LOGO, (LOGO_X, LOGO_Y))
     start_button.draw(screen, (0, 0, 0))
@@ -46,8 +55,7 @@ def draw_menu(screen, start_button, quit_button):
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
-    start_button = Button((255, 255, 255), 130, 275, 250, 50, "Start Game")
-    quit_button = Button((255, 255, 255), 130, 340, 250, 50, "Quit")
+
     running = True
     while running:
         for e in p.event.get():
@@ -65,7 +73,7 @@ def main():
                 if quit_button.is_over(pos):
                     running = False
 
-        draw_menu(screen, start_button, quit_button)
+        draw_menu(screen)
         p.display.update()
 
 

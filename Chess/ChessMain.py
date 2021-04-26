@@ -4,7 +4,7 @@ Object
 """
 
 import pygame as p
-from Chess import ChessEngine
+import ChessEngine
 
 WIDTH = HEIGHT = 512  # or 400
 DIMENSION = 8  # Chess board is 8x8
