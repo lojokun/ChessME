@@ -28,8 +28,11 @@ class Button:
             p.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
         p.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height), 0)
 
-        if self.text != "":
+        if self.text != "" and self.text != "Create Account":
             font = p.font.SysFont("comicsans", 60)
+            self.draw_text(screen, font)
+        else:
+            font = p.font.SysFont("comicsans", 25)
             self.draw_text(screen, font)
 
     def is_over(self, pos):
