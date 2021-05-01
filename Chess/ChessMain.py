@@ -4,6 +4,7 @@ Object
 """
 
 import pygame as p
+import requests
 import ChessEngine
 
 WIDTH = HEIGHT = 512  # or 400
@@ -43,6 +44,7 @@ def main():
     piece_at_loc = None
     sq_selected = ()  # no square is selected, keeps track of the last click of user (tuple: (row, col))
     player_clicks = []  # keep track of player clicks (two tuples: [(6, 4), (4, 4)])
+    send_board(gs)
     while running:
         for e in p.event.get():
             # print(e.type)
@@ -96,6 +98,7 @@ def main():
             # animate_move(gs.moveLog[-1], screen, gs.board, clock)
             valid_moves = gs.valid_moves()
             move_made = False
+            send_board(gs)
         if gs.checkMate:
             print("Checkmate!")
             running = False
@@ -224,6 +227,12 @@ Animating a move
 #             screen.blit(IMAGES[move.pieceMoved], p.Rect(col*SQ_SIZE, row*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 #             p.display.flip()
 #             clock.tick(60)
+
+
+def send_board(gs):
+    response = requests.post("http://127.0.0.1:8000/pass-board/", data={"board": gs.board})
+    print(response.content)
+    print(response.status_code)
 
 
 if __name__ == "__main__":

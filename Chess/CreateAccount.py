@@ -3,7 +3,6 @@ import requests
 import LoginMenu
 import MainMenu
 
-
 WIDTH = HEIGHT = 512
 LOGO = p.image.load("images/ChessME!.png")
 LOGO = p.transform.scale(LOGO, (500, 500))
@@ -46,6 +45,19 @@ def draw_menu(screen, email_input, user_input, pass_input, user_input_rect, pass
     CREATE_BUTTON.draw(screen, (0, 0, 0))
 
 
+def create_user(email_text, user_text, pass_text):
+    if email_text != "" and user_text != "" and pass_text != "":
+        try:
+            # LoginMenu.main()
+            response = requests.post("http://127.0.0.1:8000/create-account/",
+                                     data={"username": user_text, "password": pass_text,
+                                           "email": email_text})
+            print(response.content)
+            print(response.status_code)
+        except:
+            print("Error, username or email already taken!")
+
+
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -71,15 +83,7 @@ def main():
 
             if e.type == p.MOUSEBUTTONDOWN:
                 if CREATE_BUTTON.is_over(pos):
-                    try:
-                        # LoginMenu.main()
-                        response = requests.post("http://127.0.0.1:8000/create-account/",
-                                                 data={"username": user_text, "password": pass_text,
-                                                       "email": email_text})
-                        print(response.content)
-                        print(response.status_code)
-                    except:
-                        LoginMenu.main()
+                    create_user(email_text, user_text, pass_text)
                 if LOGIN_BUTTON.is_over(pos):
                     try:
                         LoginMenu.main()
@@ -102,6 +106,8 @@ def main():
                     pass_write = False
 
             if e.type == p.KEYDOWN:
+                if e.key == p.K_KP_ENTER:
+                    create_user(email_text, user_text, pass_text)
                 if email_write:
                     if e.key == p.K_BACKSPACE:
                         email_text = email_text[:-1]

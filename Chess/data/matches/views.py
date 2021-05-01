@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
-from django.core import serializers
+# from django.core import serializers
 from django.http import HttpResponse
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from matches.models import Player
@@ -26,7 +26,10 @@ def do_login(request):
 
 @csrf_exempt
 def pass_board(request):
-    pass
+    print(request.POST)
+    board = request.POST.get("board", "")
+    print(board)
+    return HttpResponse()
 
 
 @csrf_exempt
@@ -37,10 +40,13 @@ def create_account(request):
     email = request.POST.get("email", "")
     try:
         new_user = User.objects.create_user(username=username, email=email, password=password)
-    except:
+    except User.objects.get(username=username):
+        print("Username already taken")
         new_user = None
+        return HttpResponse(status=402)
+    except User.objects.get(email=email):
+        print("Email already used")
+        new_user = None
+        return HttpResponse(status=401)
 
-    if new_user is not None:
-        return HttpResponse()
-    else:
-        return HttpResponse(status=403)
+    return HttpResponse()

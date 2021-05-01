@@ -1,7 +1,8 @@
 import pygame as p
 import requests
 
-import MainMenu, CreateAccount
+import MainMenu
+import CreateAccount
 
 WIDTH = HEIGHT = 512
 LOGO = p.image.load("images/ChessME!.png")
