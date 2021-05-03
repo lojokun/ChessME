@@ -2,6 +2,8 @@
 This class is responsible for storing all the information about the current state of a chess game. Also responsible
 for determining the valid moves at the current state. It also keeps a moves log.
 """
+import requests
+from ChessMain import send_board
 
 
 class GameState:

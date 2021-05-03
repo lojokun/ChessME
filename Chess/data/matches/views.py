@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 # from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+import json
 
-from matches.models import Player
+from matches.models import Player, GameState, Match
 
 
 @csrf_exempt
@@ -25,10 +26,25 @@ def do_login(request):
 
 
 @csrf_exempt
-def pass_board(request):
+def refresh_board(request, match_id):
+    match = Match.objects.get(id=match_id)
+    all_states = GameState.objects.filter(match_id=match_id)
+    old_gamestate = all_states[len(all_states) - 1]
+    return HttpResponse(old_gamestate.board)
+
+
+@csrf_exempt
+def pass_board(request, match_id):
     print(request.POST)
-    board = request.POST.get("board", "")
-    print(board)
+    string_board = request.POST.get("board", "")
+    all_states = GameState.objects.filter(match_id=match_id)
+    old_gamestate = all_states[len(all_states) - 1]
+    gamestate = GameState.objects.create(board=string_board, match_id=match_id,
+                                         white_to_move=not old_gamestate.white_to_move)
+    # gamestate.board = string_board
+    # gamestate.white_to_move = not gamestate.white_to_move
+    # gamestate.save()
+    print(string_board)
     return HttpResponse()
 
 

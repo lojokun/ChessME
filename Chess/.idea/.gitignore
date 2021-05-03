@@ -3,6 +3,7 @@
 /workspace.xml
 # Datasource local storage ignored files
 /../../../../../:\SDA Python Course\Final Project\Chess\.idea/dataSources/
+/../../../../../:\SDA Python Course\Final Project\Chess\data\data\.env
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/

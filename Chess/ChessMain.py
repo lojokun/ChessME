@@ -29,7 +29,7 @@ def load_images():
 The main driver of our code. This will handle user input and updating the graphics
 '''
 
-
+match_id = 1
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -44,7 +44,6 @@ def main():
     piece_at_loc = None
     sq_selected = ()  # no square is selected, keeps track of the last click of user (tuple: (row, col))
     player_clicks = []  # keep track of player clicks (two tuples: [(6, 4), (4, 4)])
-    send_board(gs)
     while running:
         for e in p.event.get():
             # print(e.type)
@@ -94,6 +93,8 @@ def main():
                 if e.key == p.K_z:  # undo when 'z' is pressed
                     gs.undo_move()
                     move_made = True
+                if e.key == p.K_x:
+                    refresh_board(gs)
         if move_made:
             # animate_move(gs.moveLog[-1], screen, gs.board, clock)
             valid_moves = gs.valid_moves()
@@ -208,6 +209,7 @@ def draw_piece_at(screen, piece, location):
 Animating a move
 '''
 
+
 # def animate_move(move, screen, board, clock):
 #     global colors
 #     dr = move.end_row - move.start_row
@@ -229,10 +231,47 @@ Animating a move
 #             clock.tick(60)
 
 
-def send_board(gs):
-    response = requests.post("http://127.0.0.1:8000/pass-board/", data={"board": gs.board})
+def refresh_board(gs):
+    response = requests.post(f"http://127.0.0.1:8000/refresh-board/{match_id}/")
     print(response.content)
     print(response.status_code)
+    string_board = response.content
+    board = string_to_board(str(string_board))
+    print(board)
+    gs.board = board
+
+
+def send_board(gs):
+    response = requests.post(f"http://127.0.0.1:8000/pass-board/{match_id}/", data={"board": board_to_string(gs.board),
+                                                                                   "white_to_move": gs.whiteToMove})
+    print(response.content)
+    print(response.status_code)
+
+
+def board_to_string(board):
+    string_board = ""
+    for row in board:
+        for piece in row:
+            string_board += piece
+
+    return string_board
+
+
+def string_to_board(string_board):
+    string_board = str(string_board)[2:len(string_board) - 1]
+    board = []
+    for i in range(8):
+        string_row = string_board[i * 16:i * 16 + 16]
+        print(string_row)
+        row = []
+        for j in range(8):
+            print(i, j)
+            print(j * 2, j * 2 + 1)
+            print(string_row[j * 2], string_row[j * 2 + 1])
+            row.append(f"{string_row[j * 2]}{string_row[j * 2 + 1]}")
+        board.append(row)
+
+    return board
 
 
 if __name__ == "__main__":
