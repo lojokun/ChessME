@@ -8,7 +8,6 @@ LOGO = p.image.load("images/ChessME!.png")
 LOGO = p.transform.scale(LOGO, (500, 500))
 LOGO_X = 5
 LOGO_Y = 0
-
 CREATE_BUTTON = MainMenu.Button((255, 255, 255), 170, 385, 180, 50, "Create")
 LOGIN_BUTTON = MainMenu.Button((255, 255, 255), 380, 5, 130, 50, "Login")
 

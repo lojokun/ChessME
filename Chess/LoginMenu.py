@@ -39,6 +39,19 @@ def draw_menu(screen, user_input, pass_input, user_input_rect, pass_input_rect):
     CREATE_BUTTON.draw(screen, (0, 0, 0))
 
 
+def login(user_text, pass_text):
+    try:
+        print("Logging in...")
+        response = requests.post("http://127.0.0.1:8000/login/",
+                                 data={"username": user_text, "password": pass_text})
+        print(response.content)
+        content = str(response.content)[2:-1].split("/")
+        print(content)
+        print(response.status_code)
+    except:
+        print("Username or password incorrect")
+
+
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -57,19 +70,12 @@ def main():
 
             if e.type == p.QUIT:
                 running = False
-                print(pass_text)
+                # print(pass_text)
 
             if e.type == p.MOUSEBUTTONDOWN:
                 if LOGIN_BUTTON.is_over(pos):
-                    try:
-                        # MainMenu.main()
-                        print("Logging in...")
-                        response = requests.post("http://127.0.0.1:8000/login/",
-                                                 data={"username": user_text, "password": pass_text})
-                        print(response.content)
-                        print(response.status_code)
-                    except:
-                        print("Username or password incorrect")
+                    login(user_text, pass_text)
+
                 if CREATE_BUTTON.is_over(pos):
                     try:
                         CreateAccount.main()
@@ -86,6 +92,8 @@ def main():
                     pass_write = False
 
             if e.type == p.KEYDOWN:
+                if e.type == p.K_KP_ENTER:
+                    login(user_text, pass_text)
                 if user_write:
                     if e.key == p.K_BACKSPACE:
                         user_text = user_text[:-1]
@@ -95,6 +103,8 @@ def main():
                     if e.key == p.K_BACKSPACE:
                         pass_text = pass_text[:-1]
                         pass_shown = pass_shown[:-1]
+                    elif e.type == p.K_RETURN:
+                        login(user_text, pass_text)
                     else:
                         pass_text += e.unicode
                         pass_shown += "*"

@@ -20,7 +20,8 @@ def do_login(request):
 
     if user is not None and user.check_password(password):
         player = Player.objects.get(user=user)
-        return HttpResponse(f"{player.rating}")
+        friends = []
+        return HttpResponse(f"{player.id}/{player.rating}")
     else:
         return HttpResponse(status=403)
 
@@ -30,6 +31,9 @@ def refresh_board(request, match_id):
     match = Match.objects.get(id=match_id)
     all_states = GameState.objects.filter(match_id=match_id)
     old_gamestate = all_states[len(all_states) - 1]
+    old_gamestate.board += f"\n{match_id}"
+    # response = {"match": match,
+    #             "board": old_gamestate.board}
     return HttpResponse(old_gamestate.board)
 
 
@@ -55,7 +59,8 @@ def create_account(request):
     password = request.POST.get("password", "")
     email = request.POST.get("email", "")
     try:
-        new_user = User.objects.create_user(username=username, email=email, password=password)
+        new_user = User.objects.create_user(username=username, password=password)
+        new_user.email = email
     except User.objects.get(username=username):
         print("Username already taken")
         new_user = None
@@ -65,4 +70,15 @@ def create_account(request):
         new_user = None
         return HttpResponse(status=401)
 
+    new_user.save()
+    return HttpResponse()
+
+
+@csrf_exempt
+def create_match(request):
+    print(request.POST)
+    white_player = request.POST.get("white_player", "")
+    black_player = request.POST.get("black_player", "")
+
+    Match.objects.create(white_player=white_player, black_player=black_player, move_log="")
     return HttpResponse()

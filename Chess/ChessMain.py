@@ -30,6 +30,8 @@ The main driver of our code. This will handle user input and updating the graphi
 '''
 
 match_id = 1
+
+
 def main():
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -243,7 +245,7 @@ def refresh_board(gs):
 
 def send_board(gs):
     response = requests.post(f"http://127.0.0.1:8000/pass-board/{match_id}/", data={"board": board_to_string(gs.board),
-                                                                                   "white_to_move": gs.whiteToMove})
+                                                                                    "white_to_move": gs.whiteToMove})
     print(response.content)
     print(response.status_code)
 

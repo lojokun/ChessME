@@ -17,5 +17,7 @@ class Match(models.Model):
 class GameState(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     datetime = models.DateTimeField(default=timezone.now)
-    board = models.TextField(default="""bRbNbBbQbKbBbNbRbpbpbpbpbpbpbpbp----------------------------------------------------------------wpwpwpwpwpwpwpwpwRwNwBwQwKwBwNwR""")
+    board = models.TextField(
+        default="""bRbNbBbQbKbBbNbRbpbpbpbpbpbpbpbp----------------------------------------------------------------wpwpwpwpwpwpwpwpwRwNwBwQwKwBwNwR""")
     white_to_move = models.BooleanField(default=True)
+    state = models.IntegerField(default=0)  # 0 - create, 1 - ongoing, 2 - finished
