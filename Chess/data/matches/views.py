@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from matches.models import Player, GameState, Match
+from friends.models import Friendship
 
 
 @csrf_exempt
@@ -20,8 +21,13 @@ def do_login(request):
 
     if user is not None and user.check_password(password):
         player = Player.objects.get(user=user)
-        friends = []
-        return HttpResponse(f"{player.id}/{player.rating}")
+        friends1 = Friendship.objects.filter(friend1=player)
+        friends2 = Friendship.objects.filter(friend2=player)
+        friends1values = friends1.values()
+        friends2values = friends2.values()
+        friend_list = [friend for friend in friends1values]
+        friend_list.append(friend for friend in friends2values)
+        return HttpResponse(f"{player.id}/{player.rating}/{friend_list}")
     else:
         return HttpResponse(status=403)
 
@@ -80,5 +86,15 @@ def create_match(request):
     white_player = request.POST.get("white_player", "")
     black_player = request.POST.get("black_player", "")
 
-    Match.objects.create(white_player=white_player, black_player=black_player, move_log="")
+    new_match = Match.objects.create(white_player=white_player, black_player=black_player, move_log="")
+    GameState.objects.create(match=new_match)
     return HttpResponse()
+
+
+@csrf_exempt
+def create_friendship(request):
+    print(request.POST)
+    friend1 = request.POST.get("friend1", "")
+    friend2 = request.POST.get("friend2", "")
+
+    Friendship.objects.create(friend1=friend1, friend2=friend2)

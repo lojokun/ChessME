@@ -55,9 +55,11 @@ def draw_menu(screen):
     quit_button.draw(screen, (0, 0, 0))
 
 
-def main():
+def main(username, friend_list):
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
+    my_font = p.font.SysFont("comicsans", 25)
+    welcome = my_font.render(f"Welcome, {username}!", True, (0, 0, 0))
 
     running = True
     while running:
@@ -77,8 +79,9 @@ def main():
                     running = False
 
         draw_menu(screen)
+        screen.blit(welcome, (10, 5))
         p.display.update()
 
 
 if __name__ == "__main__":
-    main()
+    main("random", "random")

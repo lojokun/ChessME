@@ -44,10 +44,11 @@ def login(user_text, pass_text):
         print("Logging in...")
         response = requests.post("http://127.0.0.1:8000/login/",
                                  data={"username": user_text, "password": pass_text})
-        print(response.content)
+        # print(response.content)
         content = str(response.content)[2:-1].split("/")
         print(content)
         print(response.status_code)
+        MainMenu.main(user_text, content[3])
     except:
         print("Username or password incorrect")
 
@@ -92,7 +93,7 @@ def main():
                     pass_write = False
 
             if e.type == p.KEYDOWN:
-                if e.type == p.K_KP_ENTER:
+                if e.type == p.K_RETURN:
                     login(user_text, pass_text)
                 if user_write:
                     if e.key == p.K_BACKSPACE:
