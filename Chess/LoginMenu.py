@@ -1,3 +1,5 @@
+import json
+
 import pygame as p
 import requests
 
@@ -44,11 +46,11 @@ def login(user_text, pass_text):
         print("Logging in...")
         response = requests.post("http://127.0.0.1:8000/login/",
                                  data={"username": user_text, "password": pass_text})
-        # print(response.content)
-        content = str(response.content)[2:-1].split("/")
-        print(content)
+        print(response.content)
+        response_dict = json.loads(response.content)
         print(response.status_code)
-        MainMenu.main(user_text, content[3])
+        print(response_dict)
+        MainMenu.main(user_text, [])
     except:
         print("Username or password incorrect")
 

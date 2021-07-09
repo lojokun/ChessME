@@ -54,7 +54,10 @@ def create_user(email_text, user_text, pass_text):
             print(response.content)
             print(response.status_code)
         except:
-            print("Error, username or email already taken!")
+            if response.status_code == 402:
+                print("Error, username already taken!")
+            elif response.status_code == 401:
+                print("Error, email already taken!")
 
 
 def main():
