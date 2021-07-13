@@ -74,6 +74,8 @@ def create_account(request):
         new_user = User.objects.create_user(username=username, password=password)
         new_user.email = email
         new_user.save()
+        new_player = Player.objects.create(user=new_user)
+        new_player.save()
     except User.objects.get(username=username):
         print("Username already taken")
         return HttpResponse(status=402)
@@ -87,9 +89,11 @@ def create_account(request):
 @csrf_exempt
 def create_match(request):
     print(request.POST)
-    white_player = request.POST.get("white_player", "")
-    black_player = request.POST.get("black_player", "")
+    white_player_name = request.POST.get("white_player", "")
+    black_player_name = request.POST.get("black_player", "")
 
+    white_player = Player.objects.filter(user=User.objects.filter(username=white_player_name).first()).first()
+    black_player = Player.objects.filter(user=User.objects.filter(username=black_player_name).first()).first()
     new_match = Match.objects.create(white_player=white_player, black_player=black_player, move_log="")
     GameState.objects.create(match=new_match)
     return HttpResponse()
@@ -98,8 +102,15 @@ def create_match(request):
 @csrf_exempt
 def create_friendship(request):
     print(request.POST)
-    friend1 = request.POST.get("friend1", "")
-    friend2 = request.POST.get("friend2", "")
+    friend1_name = request.POST.get("friend1", "")
+    friend2_name = request.POST.get("friend2", "")
+    print(friend1_name)
+    print(friend2_name)
 
-    Friendship.objects.create(friend1=friend1, friend2=friend2)
-    return HttpResponse()
+    if User.objects.get(username=friend1_name) and User.objects.get(username=friend2_name):
+        friend1 = Player.objects.filter(user=User.objects.filter(username=friend1_name).first()).first()
+        friend2 = Player.objects.filter(user=User.objects.filter(username=friend2_name).first()).first()
+        Friendship.objects.create(friend1=friend1, friend2=friend2)
+        return HttpResponse()
+
+    return HttpResponse(status=401)

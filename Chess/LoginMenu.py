@@ -50,7 +50,13 @@ def login(user_text, pass_text):
         response_dict = json.loads(response.content)
         print(response.status_code)
         print(response_dict)
-        MainMenu.main(user_text, [])
+        friendships_list = response_dict["friendships"]
+        friend_names = []
+        for friend_dict in friendships_list:
+            friend_name = friend_dict["name"]
+            friend_names.append(friend_name)
+        print(friend_names)
+        MainMenu.main(user_text, friend_names)
     except:
         print("Username or password incorrect")
 
