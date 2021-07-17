@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'matches',
     'friends',
+    # 'channels',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'data.wsgi.application'
+ASGI_APPLICATION = 'data.asgi.application'
 
 
 # Database

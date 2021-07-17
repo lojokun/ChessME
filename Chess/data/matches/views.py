@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 # from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 # from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -11,7 +11,7 @@ from friends.models import Friendship
 
 @csrf_exempt
 def do_login(request):
-    print(request.POST)
+    # print(request.POST)
     username = request.POST.get("username", "")
     password = request.POST.get("password", "")
     try:
@@ -95,7 +95,9 @@ def create_match(request):
     white_player = Player.objects.filter(user=User.objects.filter(username=white_player_name).first()).first()
     black_player = Player.objects.filter(user=User.objects.filter(username=black_player_name).first()).first()
     new_match = Match.objects.create(white_player=white_player, black_player=black_player, move_log="")
-    GameState.objects.create(match=new_match)
+    new_gamestate = GameState.objects.create(match=new_match)
+    new_match.save()
+    new_gamestate.save()
     return HttpResponse()
 
 
@@ -114,3 +116,24 @@ def create_friendship(request):
         return HttpResponse()
 
     return HttpResponse(status=401)
+
+
+@csrf_exempt
+def get_challenge(request):
+    challenged = request.POST.get("challenged", "")
+    challenger = request.POST.get("challenger", "")
+    challenged_user = User.objects.filter(username=challenged).first()
+    challenged_id = challenged_user.id
+    # print(challenged)
+    # print(challenger)
+    # print(challenged_id)
+    send_challenge(challenger, challenged_id)
+    return HttpResponse()
+
+
+@csrf_exempt
+def send_challenge(challenger, challenged_id):
+    if User.objects.filter(id=challenged_id).first():
+        return HttpResponse(challenger)
+
+    return HttpResponse(challenger)

@@ -52,11 +52,13 @@ def login(user_text, pass_text):
         print(response_dict)
         friendships_list = response_dict["friendships"]
         friend_names = []
+        user_id = response_dict["id"]
+        print(user_id)
         for friend_dict in friendships_list:
             friend_name = friend_dict["name"]
             friend_names.append(friend_name)
         print(friend_names)
-        MainMenu.main(user_text, friend_names)
+        MainMenu.main(user_text, friend_names, user_id)
     except:
         print("Username or password incorrect")
 

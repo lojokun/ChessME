@@ -236,10 +236,10 @@ Animating a move
 def refresh_board(gs):
     response = requests.post(f"http://127.0.0.1:8000/refresh-board/{match_id}/")
     print(response.content)
-    #print(response.status_code)
+    # print(response.status_code)
     string_board = response.content
     board = string_to_board(str(string_board))
-    #print(board)
+    # print(board)
     gs.board = board
 
 

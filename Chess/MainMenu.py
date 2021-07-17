@@ -1,6 +1,10 @@
 import pygame as p
 import requests
+import time
 import ChessMain
+# import websockets
+# import asyncio
+# import json
 
 WIDTH = HEIGHT = 512
 LOGO = p.image.load("images/ChessME!.png")
@@ -52,7 +56,7 @@ challenge_button = Button((255, 255, 255), 12, 412, 186, 23, "Challenge")
 def draw_menu(screen, user_input, username, friend_list, challenge_input):
     my_font = p.font.SysFont("comicsans", 25)
     welcome = my_font.render(f"Welcome, {username}!", True, (0, 0, 0))
-    add_friend = my_font.render("Enter a username", True, (255, 255, 255))
+    friend_add = my_font.render("Enter a username", True, (255, 255, 255))
     challenge_friend = my_font.render("Challenge a friend", True, (255, 255, 255))
     user_input_surface = my_font.render(user_input, True, (0, 0, 0))
     challenge_input_surface = my_font.render(challenge_input, True, (0, 0, 0))
@@ -79,7 +83,7 @@ def draw_menu(screen, user_input, username, friend_list, challenge_input):
     p.draw.rect(screen, (0, 0, 0), challenge_text)
     p.draw.rect(screen, (255, 255, 255), challenge_write)
     screen.blit(welcome, (10, 5))
-    screen.blit(add_friend, (320, 360))
+    screen.blit(friend_add, (320, 360))
     screen.blit(challenge_friend, (10, 360))
     screen.blit(user_input_surface, (add_friend_write.x + 5, add_friend_write.y + 5))
     screen.blit(challenge_input_surface, (challenge_write.x + 5, challenge_write.y + 5))
@@ -90,12 +94,50 @@ def add_friend(username, friend, friend_list):
         response = requests.post("http://127.0.0.1:8000/create-friendship/", data={"friend1": username,
                                                                                    "friend2": friend})
         print(response.content)
-        friend_list.append(friend)
+        if "User matching query does not exist" not in response.content:
+            friend_list.append(friend)
     except:
         print("Username not found")
 
 
-def main(username, friend_list):
+def send_challenge(challenger, challenged):
+    try:
+        response = requests.post("http://127.0.0.1:8000/get-challenge/", data={"challenged": challenged,
+                                                                               "challenger": challenger})
+        print(response)
+    except:
+        print("Exception")
+
+
+def get_challenge(user_id):
+    try:
+        response = requests.post(f"http://127.0.0.1:8000/send-challenge/{user_id}/")
+        if response.content != b"":
+            print(response)
+            print(response.content)
+            print(response.json())
+    except:
+        print("...")
+# async def challenge(friend):
+#     url = "ws://127.0.0.1:8000/get-challenge/"
+#     friend_dict = {"friend": friend}
+#     print(friend_dict)
+#
+#     async with websockets.connect(url) as ws:
+#         print("Sending dict")
+#         await ws.send(json.dumps(friend_dict))
+#         print("Send complete")
+#
+#
+# async def get_challenge():
+#     url = "ws://127.0.0.1:8000/send-challenge/"
+#
+#     async with websockets.connect(url) as ws:
+#         response = await ws.recv()
+#         print(response)
+
+
+def main(username, friend_list, user_id):
     p.init()
     screen = p.display.set_mode((WIDTH, HEIGHT))
     friend_text = ""
@@ -122,6 +164,10 @@ def main(username, friend_list):
                     add_friend(username, friend_text, friend_list)
                     pass
 
+                if challenge_button.is_over(pos):
+                    # asyncio.get_event_loop().run_until_complete(challenge(challenge_text))
+                    send_challenge(username, challenge_text)
+
                 if user_input.collidepoint(pos):
                     user_write = True
                     challenge_write = False
@@ -135,6 +181,7 @@ def main(username, friend_list):
                     challenge_write = False
 
             if e.type == p.KEYDOWN:
+
                 if user_write:
                     if e.key == p.K_BACKSPACE:
                         friend_text = friend_text[:-1]
@@ -149,7 +196,9 @@ def main(username, friend_list):
 
         draw_menu(screen, friend_text, username, friend_list, challenge_text)
         p.display.update()
+        get_challenge(user_id)
+        # asyncio.get_event_loop().run_until_complete(get_challenge())
 
 
 if __name__ == "__main__":
-    main("random", ["friend1", "friend2", "friend3"])
+    main("random", ["friend1", "friend2", "friend3"], 0)
